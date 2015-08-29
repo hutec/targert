@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Target - Ebay Search</title>
+</head>
+<body>
+    {% for result in results %}
+    <p> <a href='{{result.viewItemURL}}'>{{result.title}}</a></p>
+    {% endfor %}
+</body>
+</html>

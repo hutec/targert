@@ -1,0 +1,22 @@
+{
+    "Viberg" : {
+        "category": "footwear",
+        "request" : {
+            "keywords": "Viberg",
+            "itemFilter": [
+                {"name": "LocatedIn",
+                 "value": "DE"}
+            ]
+        }
+    },
+    "Red Wing" : {
+        "category": "footwear",
+        "request" : {
+            "keywords": "Red Wing",
+            "itemFilter": [
+                {"name": "LocatedIn",
+                 "value": "DE"}
+            ]
+        }
+    }
+}
