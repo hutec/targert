@@ -13,6 +13,7 @@
 
     <link rel="stylesheet" href="/static/css/style.css" />
     <link rel="stylesheet" href="{{ url_for('bower.static', filename='bootstrap/dist/css/bootstrap.css') }}" />
+    <script src="/static/js/func.js"></script>
   </head>
 
   <body>
@@ -41,8 +42,10 @@
     <div class="container">
       <div class="starter-template">
           {% for result in results %}
-          <p> <a
-              href='{{result.viewItemURL}}'>{{result.title}}</a> - {{result.sellingStatus.currentPrice.value}}</p>
+          <p> 
+            <a href='{{result.viewItemURL}}'>{{result.title}}</a> - {{result.sellingStatus.currentPrice.value}}
+            <a onclick="ignoreItem({{result.itemId}})"><i class="glyphicon glyphicon-remove remove-item"></i></a>
+          </p>
           {% endfor %}
       </div>
 
