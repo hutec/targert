@@ -15,6 +15,6 @@ def index():
 def show_target_page():
     results = []
     for req in ebay_handler.search_requests:
-        results.extend(ebay_handler.get_multi_page_result(req, 2))
+        results.extend(ebay_handler.get_multi_page_result(req, 1))
     return render_template('index.html', results=results)
 

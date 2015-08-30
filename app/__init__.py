@@ -6,8 +6,8 @@ from flask.ext.bower import Bower
 
 app = Flask(__name__)
 app.config.from_object('config')
-from app import views
 
 Bower(app)
+from app import views
 
 

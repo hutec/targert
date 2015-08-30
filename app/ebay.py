@@ -6,10 +6,6 @@ from ebaysdk.finding import Connection as Finding
 from ebaysdk.shopping import Connection as Shopping
 from pprint import pprint
 
-# def get_categorie_info():
-#     shopping_api = Shopping()
-#     response = shopping_api.execute('GetCategoryInfo', {'CategoryID': '-1'})
-#     print response
 
 def byteify(input):
     """Encode unicode in dicts to utf8"""
@@ -27,6 +23,15 @@ def byteify(input):
 class EbayHandler(object):
     """Communication with the ebay finding api"""
 
+    def get_categorie_info(self):
+        shopping_api = Shopping()
+        # UK = 3, Germany = 77
+        response = shopping_api.execute('GetCategoryInfo',
+                                        {'CategoryID': -1,
+                                         'siteid': 77, 
+                                         'IncludeSelector': 'ChildCategories'})
+        pprint(response.reply)
+
     def __init__(self):
         self.filepath = os.path.dirname(os.path.realpath(__file__))
         self.finding_api = Finding(config_file= self.filepath + '/ebay.yaml')
@@ -43,8 +48,11 @@ class EbayHandler(object):
             site_request['paginationInput'] = {'entriesPerPage': '100',
                                                'pageNumber': page_number}
 
-            print(site_request)
             response = self.finding_api.execute('findItemsAdvanced', site_request)
+            
+            if not hasattr(response.reply.searchResult, 'item'):
+                return []
+                
             for item in response.reply.searchResult.item:
                 if item.itemId not in result_ids:
                     result_ids.append(item.itemId)
@@ -68,20 +76,20 @@ class EbayHandler(object):
 
         return results
 
-
     def test(self):
         """method for testing some calls"""
         try:
             test_request = {
-                'keywords': 'Viberg',
+                'keywords': 'Red Wing',
                 'itemFilter' : [
                     {'name': 'LocatedIn',
                      'value': 'DE'}
                 ]
             }
             results = self.get_multi_page_result(test_request, 2)
-            for r in results:                     
-                print r.title                     
+            print(results[2])
+            # for r in results:                     
+            #     print r.title                     
 
         except ConnectionError as e:
             print(e)
@@ -92,5 +100,6 @@ class EbayHandler(object):
 
 if __name__ == '__main__':
     e = EbayHandler()
+    #e.get_categorie_info()
     e.test()
     
