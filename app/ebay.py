@@ -5,6 +5,8 @@ from requests import ConnectionError
 from ebaysdk.finding import Connection as Finding
 from ebaysdk.shopping import Connection as Shopping
 from pprint import pprint
+from app import app, db
+from app import models
 
 
 def byteify(input):
@@ -37,6 +39,10 @@ class EbayHandler(object):
         self.finding_api = Finding(config_file= self.filepath + '/ebay.yaml')
         self.search_requests = self.parse_search_config()
 
+        self.cached_results = []
+        for req in self.search_requests:
+            self.cached_results.extend(self.get_multi_page_result(req, 1))
+
 
     def get_multi_page_result(self, request, search_size=0):
         """Collect unique results on multiple pages for given request"""
@@ -48,7 +54,8 @@ class EbayHandler(object):
             site_request['paginationInput'] = {'entriesPerPage': '100',
                                                'pageNumber': page_number}
 
-            response = self.finding_api.execute('findItemsAdvanced', site_request)
+            response = self.finding_api.execute('findItemsAdvanced',
+                                                site_request)
             
             if not hasattr(response.reply.searchResult, 'item'):
                 return []
@@ -75,6 +82,16 @@ class EbayHandler(object):
                     results.append(value['request'])
 
         return results
+
+    def get_cached_results(self):
+        return self.cached_results
+
+    def get_all_titles(self):
+        titles = []
+        for req in models.EbayRequest.query.all():
+            titles.append(req.title)
+        return titles
+
 
     def test(self):
         """method for testing some calls"""
