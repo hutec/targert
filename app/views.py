@@ -7,6 +7,7 @@ from app import app, db
 from forms import AddSearchForm
 from pprint import pprint
 from models import EbayRequest
+import urllib
 
 ebay_handler = EbayHandler()
 
@@ -31,8 +32,9 @@ def index():
     return 'Hello world'
 
 
+@app.route('/target/<title>', methods=['GET'])
 @app.route('/target', methods=['GET', 'POST'])
-def show_target_page():
+def show_target_page(title=None):
     form = AddSearchForm(request.form)
     if request.method == 'POST' and form.validate():
         search = EbayRequest(title = form.title.data,
@@ -40,10 +42,17 @@ def show_target_page():
         db.session.add(search)
         db.session.commit()
         print("added search " + form.title.data)
+        ebay_handler.add_search(search)
+        
+        #refresh search results
+
+    if title is not None:
+        title = urllib.unquote_plus(title)
 
     return render_template('index.html',
-                           results=ebay_handler.get_cached_results(),
-                           searches = ebay_handler.get_all_titles(),
+                           #results=ebay_handler.get_cached_results(),
+                           results=ebay_handler.get_search_results(title),
+                           searches=ebay_handler.get_searches(),
                            #searches=['APC', 'Viberg', 'Red Wing'],
                            form=form)
 

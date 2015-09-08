@@ -9,23 +9,12 @@ from app import app, db
 from app import models
 
 
-def byteify(input):
-    """Encode unicode in dicts to utf8"""
-    if isinstance(input, dict):
-        return {byteify(key):byteify(value) for key,value in
-                input.iteritems()}
-    elif isinstance(input, list):
-        return [byteify(element) for element in input]
-    elif isinstance(input, unicode):
-        return input.encode('utf-8')
-    else:
-        return input
-
-
 class EbayHandler(object):
     """Communication with the ebay finding api"""
 
     def get_categorie_info(self):
+        """ Get category info for specific item """
+
         shopping_api = Shopping()
         # UK = 3, Germany = 77
         response = shopping_api.execute('GetCategoryInfo',
@@ -37,18 +26,25 @@ class EbayHandler(object):
     def __init__(self):
         self.filepath = os.path.dirname(os.path.realpath(__file__))
         self.finding_api = Finding(config_file= self.filepath + '/ebay.yaml')
-        self.search_requests = self.parse_search_config()
+        # self.search_requests = self.parse_search_config()
+        self.search_requests = self.get_searches()
 
-        self.cached_results = []
-        for req in self.search_requests:
-            self.cached_results.extend(self.get_multi_page_result(req, 1))
+        self.cached_results = {}
+        for search in self.search_requests:
+            self.add_search(search)
+
+    def add_search(self, ebay_request):
+        self.cached_results[ebay_request.title] = \
+            self.get_multi_page_result(ebay_request.get_request(), 1)
 
 
     def get_multi_page_result(self, request, search_size=0):
-        """Collect unique results on multiple pages for given request"""
+        """Collect unique results on multiple pages for given request
+        
+        Note that just the request dict without the 'request' key is needed 
+        """
         results = []
         result_ids = []
-        self.search_requests = self.parse_search_config()
         for page_number in range(1, search_size + 1):
             site_request = request
             site_request['paginationInput'] = {'entriesPerPage': '100',
@@ -57,6 +53,7 @@ class EbayHandler(object):
             response = self.finding_api.execute('findItemsAdvanced',
                                                 site_request)
             
+
             if not hasattr(response.reply.searchResult, 'item'):
                 return []
                 
@@ -68,20 +65,13 @@ class EbayHandler(object):
         return results
 
 
-    def parse_search_config(self, path=None):
-        """Construct search requests from search config file"""
-        if path is None:
-            path = self.filepath + '/search.json' 
+    def get_searches(self):
+        """ Get all searches from DB """
+        searches = []
+        for search in models.EbayRequest.query.all():
+            searches.append(search)
+        return searches
 
-        results = []
-        with open(path) as json_file:
-            data = json.load(json_file)
-            data = byteify(data)
-            for key, value in data.iteritems():
-                if 'request' in value.keys():
-                    results.append(value['request'])
-
-        return results
 
     def get_cached_results(self):
         return self.cached_results
@@ -89,8 +79,17 @@ class EbayHandler(object):
     def get_all_titles(self):
         titles = []
         for req in models.EbayRequest.query.all():
-            titles.append(req.title)
+            titles.append(str(req.title))
         return titles
+
+    def get_search_results(self, title=None):
+        print(self.cached_results.keys())
+        if title is None:
+            return None
+        if title in self.cached_results:
+            return self.cached_results[title]
+        print("Key " + title + " is not in cached results")
+        return None
 
 
     def test(self):
