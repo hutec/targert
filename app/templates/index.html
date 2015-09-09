@@ -63,7 +63,15 @@
               <ul class="nav nav-sidebar">
                   {% if search is not none %}
                     {% for search in searches %}
-                        <li><a href="/target/{{search.url}}">{{search.title}}</a></li>
+                    <li>
+                        <a href="/target/{{search.url}}">
+                            <button class="btn btn-default btn-xs"
+                                onclick="removeSearch('{{search.url}}')">
+                                <i class="glyphicon glyphicon-remove"></i>
+                            </button>
+                            {{search.title}}
+                        </a>
+                    </li>
                     {% endfor %}
                   {% else %}
                     NONE

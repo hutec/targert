@@ -3,13 +3,13 @@ import json
 from flask import Blueprint, request, render_template, flash, g, session,\
     url_for
 from ebay import EbayHandler
-from app import app, db
+from app import app, db, ebay_handler
 from forms import AddSearchForm
 from pprint import pprint
 from models import EbayRequest
 import urllib
 
-ebay_handler = EbayHandler()
+#ebay_handler = EbayHandler()
 
 
 def add_search(title, keywords):

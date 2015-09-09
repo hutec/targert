@@ -34,8 +34,20 @@ class EbayHandler(object):
             self.add_search(search)
 
     def add_search(self, ebay_request):
+        """ Add new search and cache it """
         self.cached_results[ebay_request.title] = \
             self.get_multi_page_result(ebay_request.get_request(), 1)
+
+
+    def remove_search(self, title):
+        """ Remove search from DB and cache """
+
+        models.EbayRequest.query.filter(models.EbayRequest.title == title).\
+            delete()
+        db.session.commit()
+
+        if title in self.cached_results:
+            del self.cached_results[title]
 
 
     def get_multi_page_result(self, request, search_size=0):
@@ -49,6 +61,7 @@ class EbayHandler(object):
             site_request = request
             site_request['paginationInput'] = {'entriesPerPage': '100',
                                                'pageNumber': page_number}
+#from app import models
 
             response = self.finding_api.execute('findItemsAdvanced',
                                                 site_request)
