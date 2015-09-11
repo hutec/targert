@@ -16,14 +16,6 @@ def add_search(title, keywords):
     search = AddSearchForm(title, keywords)
     db.session.add(search)
     db.session.commit()
-    # search = {title: {"request": {
-    #                     "keywords": keywords,
-    #                     "itemFilter": [
-    #                         {"name": "LocatedIn", "value": "DE"}
-    #                     ]
-    #                 }}}
-    # path = os.path.dirname(os.path.realpath(__file__)) + "/search.json"
-    # json.dump(search, open(path, "a"), indent=4)
          
 
 

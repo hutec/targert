@@ -32,8 +32,7 @@
           <div id="navbar" class="collapse navbar-collapse">
               <ul class="nav navbar-nav">
                   <li class="active"><a href="#">Home</a></li>
-                  <li><a href="#about">About</a></li>
-                  <li><a href="#contact">Contact</a></li>
+                  <li><a href="#edit">Edit</a></li>
               </ul>
           </div><!--/.nav-collapse -->
   </div>
@@ -81,16 +80,21 @@
 
           <div class="col-sm-9">
               <div class="starter-template">
-                  {% if results is not none %}
-                      {% for result in results %}
-                      <p> 
-                      <a href='{{result.viewItemURL}}'>{{result.title}}</a> - {{result.sellingStatus.currentPrice.value}}
-                      <a onclick="ignoreItem({{result.itemId}})"><i class="glyphicon glyphicon-remove remove-item"></i></a>
-                      </p>
-                      {% endfor %}
-                  {% else %}
-                    NONE
-                  {% endif %}
+                  <div class="row">
+                      {% if results is not none %}
+                        {% for result in results %}
+                        <div class="col-md-3 result-div">
+                          <img src={{result.galleryURL}}>
+                          <p>
+                              <a href='{{result.viewItemURL}}'>{{result.title}}</a> - {{result.sellingStatus.currentPrice.value}}
+                              <a onclick="ignoreItem({{result.itemId}})"><i class="glyphicon glyphicon-remove remove-item"></i></a>
+                          </p>
+                        </div>
+                        {% endfor %}
+                      {% else %}
+                          NONE
+                      {% endif %}
+                </div>
               </div>
           </div>
       </div>

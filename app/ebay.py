@@ -4,6 +4,8 @@ import json
 from requests import ConnectionError
 from ebaysdk.finding import Connection as Finding
 from ebaysdk.shopping import Connection as Shopping
+from ebaysdk.parallel import Parallel
+from ebaysdk.exception import ConnectionError
 from pprint import pprint
 from app import app, db
 from app import models
@@ -61,7 +63,7 @@ class EbayHandler(object):
             site_request = request
             site_request['paginationInput'] = {'entriesPerPage': '100',
                                                'pageNumber': page_number}
-#from app import models
+            site_request['categoryId'] = [1059]
 
             response = self.finding_api.execute('findItemsAdvanced',
                                                 site_request)

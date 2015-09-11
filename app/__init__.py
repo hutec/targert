@@ -10,11 +10,15 @@ from flask.ext.sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 app.config.from_object('config')
 
+print("Generating DB model")
 db = SQLAlchemy(app)
+print("Finished generating DB model")
 Bower(app)
 
 from ebay import EbayHandler
+print("Creating ebay_handler")
 ebay_handler = EbayHandler()
+print("Finished creating ebay_handler")
 
 from api_resources import IgnoreItem, RemoveSearch
 api = Api(app) 
